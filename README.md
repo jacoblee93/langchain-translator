@@ -20,7 +20,7 @@ GPT-4 is generally very good at rewriting and translating code. However, I perio
     - Could maybe have come up with a few-shotting/RAG pipeline like previous work on [automatically generating docstrings](https://github.com/jacoblee93/auto-docstrings) but seemed more difficult to encapsulate usage information as well as summaries
   - Idea was that fine-tuning could innately capture some of the context around imports
 2. Encapsulating code style (camel case, linter issues, etc.)
-  - Example with gpt-4: https://smith.langchain.com/public/14c1e391-2cf5-4a3d-8c9f-15929a69c08d/r?tab=2
+  - Example with gpt-4: https://smith.langchain.com/public/14c1e391-2cf5-4a3d-8c9f-15929a69c08d/r
       - Not bad but it uses snake case, doesn’t include a constructor, and doesn’t have a docstring for the class
   - Fine-tuned 3.5 on the same input: https://smith.langchain.com/public/900e7b36-5994-4a10-8ca7-fa3f74a62c8d/r
 
