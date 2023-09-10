@@ -6,7 +6,9 @@ generating starter code and docstrings.
 
 Try it out here: https://langchain-translator.vercel.app/
 
-Remember to leave feedback! It will help us further refine the dataset and allow for even better fine-tuned models
+![Example chat output with feedback buttons](/public/images/output.png)
+
+Remember to leave feedback using the thumbs up and down buttons! It will help us further refine the dataset and allow for even better fine-tuned models
 in the future.
 
 ## 🎹 Why Fine-Tuning?
