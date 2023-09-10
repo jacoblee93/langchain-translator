@@ -13,25 +13,30 @@ export default function Home() {
             This chatbot converts Python LangChain modules to{" "}
             <a href="https://js.langchain.com/" target="_blank">
               LangChain.js
-            </a>.
+            </a>
+            .
           </span>
         </li>
         <li className="text-l">
           🎹
           <span className="ml-2">
-            It's powered by an OpenAI <code>gpt-3.5-turbo</code> model fine-tuned on various parallel LangChain Python and JS modules.
+            It&apos;s powered by an OpenAI <code>gpt-3.5-turbo</code> model
+            fine-tuned on various parallel LangChain Python and JS modules.
           </span>
         </li>
         <li className="text-l">
           🧠
           <span className="ml-2">
-            This enables it to innately {`"know"`} about LangChain.js' style, dependencies, and other details, hopefully resulting in higher quality code.
+            This enables it to innately {`"know"`} about style, dependencies,
+            and other details specific to LangChain.js, theoretically resulting
+            in higher quality code.
           </span>
         </li>
         <li className="hidden text-l md:block">
           🏘️
           <span className="ml-2">
-            It's meant to be a starting point for contributors and others in the community who want to use LangChain Python features in JS!
+            It&apos;s meant to be a starting point for contributors and others
+            in the community who want to use LangChain Python features in JS!
           </span>
         </li>
         <li className="text-l">
@@ -45,11 +50,25 @@ export default function Home() {
           </span>
         </li>
         <li className="text-l">
+          🐙
+          <span className="ml-2">
+            The source code, initial training dataset, and instructions for
+            creating your own LangSmith datasets for fine-tuning are available{" "}
+            <a href="https://github.com/jacoblee93/langchain-translator">
+              in the GitHub repo
+            </a>
+            .
+          </span>
+        </li>
+        <li className="text-l">
           👇
           <span className="ml-2">
             Go to{" "}
             <code>
-              <a href="https://github.com/langchain-ai/langchain/tree/master/libs/langchain/langchain" target="_blank">
+              <a
+                href="https://github.com/langchain-ai/langchain/tree/master/libs/langchain/langchain"
+                target="_blank"
+              >
                 https://github.com/langchain-ai/langchain/tree/master/libs/langchain/langchain
               </a>
             </code>
