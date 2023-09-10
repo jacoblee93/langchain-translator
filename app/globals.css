@@ -28,6 +28,10 @@ code {
   color: #ffa500;
 }
 
+code a {
+  color: #ffa500;
+}
+
 li {
   padding: 4px;
 }

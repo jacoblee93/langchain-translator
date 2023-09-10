@@ -1,0 +1,244 @@
+import { LLM, BaseLLMParams } from "./base.js";
+import { CallbackManagerForLLMRun } from "../callbacks/manager.js";
+import { GenerationChunk } from "../schema/index.js";
+
+import { BaseLanguageModelCallOptions } from "../base_language/index.js";
+import { IterableReadableStream } from "./stream.js";
+
+export interface OllamaInput {
+  model?: string;
+  baseUrl?: string;
+  mirostat?: number;
+  mirostatEta?: number;
+  mirostatTau?: number;
+  numCtx?: number;
+  numGpu?: number;
+  numThread?: number;
+  repeatLastN?: number;
+  repeatPenalty?: number;
+  temperature?: number;
+  stop?: string[];
+  tfsZ?: number;
+  topK?: number;
+  topP?: number;
+}
+
+export interface OllamaRequestParams {
+  model: string;
+  prompt: string;
+  options: {
+    mirostat?: number;
+    mirostat_eta?: number;
+    mirostat_tau?: number;
+    num_ctx?: number;
+    num_gpu?: number;
+    num_thread?: number;
+    repeat_last_n?: number;
+    repeat_penalty?: number;
+    temperature?: number;
+    stop?: string[];
+    tfs_z?: number;
+    top_k?: number;
+    top_p?: number;
+  };
+}
+
+export interface OllamaCallOptions extends BaseLanguageModelCallOptions {}
+
+export type OllamaGenerationChunk = {
+  response: string;
+  model: string;
+  created_at: string;
+  done: boolean;
+};
+
+export async function* createOllamaStream(
+  baseUrl: string,
+  params: OllamaRequestParams,
+  options: OllamaCallOptions
+): AsyncGenerator<OllamaGenerationChunk> {
+  let formattedBaseUrl = baseUrl;
+  if (formattedBaseUrl.startsWith("http://localhost:")) {
+    // Node 18 has issues with resolving "localhost"
+    // See https://github.com/node-fetch/node-fetch/issues/1624
+    formattedBaseUrl = formattedBaseUrl.replace(
+      "http://localhost:",
+      "http://127.0.0.1:"
+    );
+  }
+  const response = await fetch(`${formattedBaseUrl}/api/generate`, {
+    method: "POST",
+    body: JSON.stringify(params),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    signal: options.signal,
+  });
+  if (!response.ok) {
+    const error = new Error(
+      `Ollama call failed with status code ${response.status}`
+    );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (error as any).response = response;
+    console.log(await response.json());
+    throw error;
+  }
+  if (!response.body) {
+    throw new Error(
+      "Could not begin Ollama stream. Please check the given URL and try again."
+    );
+  }
+
+  const stream = IterableReadableStream.fromReadableStream(response.body);
+  const decoder = new TextDecoder();
+  for await (const chunk of stream) {
+    try {
+      if (chunk !== undefined) {
+        const lines = decoder
+          .decode(chunk)
+          .split("\n")
+          .filter((v) => v.length);
+        for (const line of lines) {
+          yield JSON.parse(line);
+        }
+      }
+    } catch (e) {
+      console.warn(
+        `Received a non-JSON parseable chunk: ${decoder.decode(chunk)}`
+      );
+    }
+  }
+}
+
+/**
+ * Class that represents the Ollama language model. It extends the base
+ * LLM class and implements the OllamaInput interface.
+ */
+export class Ollama extends LLM implements OllamaInput {
+  declare CallOptions: OllamaCallOptions;
+
+  static lc_name() {
+    return "Ollama";
+  }
+
+  lc_serializable = true;
+
+  model = "llama2";
+
+  baseUrl = "http://localhost:11434";
+
+  mirostat?: number;
+
+  mirostatEta?: number;
+
+  mirostatTau?: number;
+
+  numCtx?: number;
+
+  numGpu?: number;
+
+  numThread?: number;
+
+  repeatLastN?: number;
+
+  repeatPenalty?: number;
+
+  temperature?: number;
+
+  stop?: string[];
+
+  tfsZ?: number;
+
+  topK?: number;
+
+  topP?: number;
+
+  constructor(fields: OllamaInput & BaseLLMParams) {
+    super(fields);
+    this.model = fields.model ?? this.model;
+    this.baseUrl = fields.baseUrl?.endsWith("/")
+      ? fields.baseUrl.slice(0, -1)
+      : fields.baseUrl ?? this.baseUrl;
+    this.mirostat = fields.mirostat;
+    this.mirostatEta = fields.mirostatEta;
+    this.mirostatTau = fields.mirostatTau;
+    this.numCtx = fields.numCtx;
+    this.numGpu = fields.numGpu;
+    this.numThread = fields.numThread;
+    this.repeatLastN = fields.repeatLastN;
+    this.repeatPenalty = fields.repeatPenalty;
+    this.temperature = fields.temperature;
+    this.stop = fields.stop;
+    this.tfsZ = fields.tfsZ;
+    this.topK = fields.topK;
+    this.topP = fields.topP;
+  }
+
+  _llmType() {
+    return "ollama";
+  }
+
+  invocationParams(options?: this["ParsedCallOptions"]) {
+    return {
+      model: this.model,
+      options: {
+        mirostat: this.mirostat,
+        mirostat_eta: this.mirostatEta,
+        mirostat_tau: this.mirostatTau,
+        num_ctx: this.numCtx,
+        num_gpu: this.numGpu,
+        num_thread: this.numThread,
+        repeat_last_n: this.repeatLastN,
+        repeat_penalty: this.repeatPenalty,
+        temperature: this.temperature,
+        stop: options?.stop ?? this.stop,
+        tfs_z: this.tfsZ,
+        top_k: this.topK,
+        top_p: this.topP,
+      },
+    };
+  }
+
+  async *_streamResponseChunks(
+    input: string,
+    options: this["ParsedCallOptions"],
+    runManager?: CallbackManagerForLLMRun
+  ): AsyncGenerator<GenerationChunk> {
+    const stream = await this.caller.call(async () =>
+      createOllamaStream(
+        this.baseUrl,
+        { ...this.invocationParams(options), prompt: input },
+        options
+      )
+    );
+    for await (const chunk of stream) {
+      yield new GenerationChunk({
+        text: chunk.response,
+        generationInfo: {
+          ...chunk,
+          response: undefined,
+        },
+      });
+      await runManager?.handleLLMNewToken(chunk.response ?? "");
+    }
+  }
+
+  /** @ignore */
+  async _call(
+    prompt: string,
+    options: this["ParsedCallOptions"]
+  ): Promise<string> {
+    const stream = await this.caller.call(async () =>
+      createOllamaStream(
+        this.baseUrl,
+        { ...this.invocationParams(options), prompt },
+        options
+      )
+    );
+    const chunks = [];
+    for await (const chunk of stream) {
+      chunks.push(chunk.response);
+    }
+    return chunks.join("");
+  }
+}

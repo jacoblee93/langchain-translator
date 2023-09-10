@@ -1,23 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
+import { ChatWindowMessage } from "@/schema/ChatWindowMessage";
 
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { BytesOutputParser } from "langchain/schema/output_parser";
-import { PromptTemplate } from "langchain/prompts";
+import { ChatPromptTemplate } from "langchain/prompts";
+
+import * as hub from "langchain/hub";
 
 export const runtime = "edge";
 
-const formatMessage = (message: VercelChatMessage) => {
-  return `${message.role}: ${message.content}`;
+const formatMessage = (message: ChatWindowMessage) => {
+  let prefix;
+  if (message.role === "human") {
+    prefix = "Human:";
+  } else {
+    prefix = "Assistant:";
+  }
+  return `${prefix} ${message.content}`;
 };
-
-const TEMPLATE = `You are a pirate named Patchy. All responses must be extremely verbose and in pirate dialect.
-
-Current conversation:
-{chat_history}
-
-User: {input}
-AI:`;
 
 /**
  * This handler initializes and calls a simple chain with a prompt,
@@ -31,22 +31,21 @@ export async function POST(req: NextRequest) {
     const messages = body.messages ?? [];
     const formattedPreviousMessages = messages.slice(0, -1).map(formatMessage);
     const currentMessageContent = messages[messages.length - 1].content;
-    const prompt = PromptTemplate.fromTemplate(TEMPLATE);
+    const prompt = messages.length === 1
+      ? await hub.pull("jacob/langchain-python-to-js")
+      : await hub.pull("jacob/langchain-python-to-js-follow-up");
+
     /**
-     * You can also try e.g.:
-     *
-     * import { ChatAnthropic } from "langchain/chat_models/anthropic";
-     * const model = new ChatAnthropic({});
-     *
-     * See a full list of supported models at:
-     * https://js.langchain.com/docs/modules/model_io/models/
+     * Custom fine-tuned model trained from the dataset in "upload_initial_dataset.ts".
+     * For best results, keep temperature low.
      */
     const model = new ChatOpenAI({
-      temperature: 0.8,
+      temperature: 0,
+      modelName: process.env.OPENAI_FINE_TUNED_MODEL_NAME
     });
+
     /**
-     * Chat models stream message chunks rather than bytes, so this
-     * output parser handles serialization and byte-encoding.
+     * This output parser converts streaming output chunks into the correct format.
      */
     const outputParser = new BytesOutputParser();
 
@@ -58,12 +57,37 @@ export async function POST(req: NextRequest) {
      */
     const chain = prompt.pipe(model).pipe(outputParser);
 
-    const stream = await chain.stream({
+    const chainParams = messages.length === 1 ? {
+      code: currentMessageContent,
+    } : {
       chat_history: formattedPreviousMessages.join("\n"),
-      input: currentMessageContent,
+      question: currentMessageContent,
+    }
+    /**
+     * Wait for a run id to be generated.
+     */
+    let chainRunId;
+    const stream: ReadableStream = await new Promise((resolve) => {
+      const chainStream = chain.stream(
+        chainParams,
+        {
+          callbacks: [
+            {
+              handleChainStart(_llm, _prompts, runId) {
+                chainRunId = runId;
+                resolve(chainStream);
+              },
+            },
+          ],
+        },
+      );
     });
 
-    return new StreamingTextResponse(stream);
+    return new Response(stream, {
+      headers: {
+        "x-langsmith-run-id": chainRunId ?? "",
+      },
+    });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }

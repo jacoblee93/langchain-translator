@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write \"app\""
+    "format": "prettier --write \"app\"",
+    "bootstrap": "yarn run tsx ./scripts/upload_initial_dataset.ts"
   },
   "engines": {
     "node": ">=18"
@@ -19,9 +20,13 @@
     "@types/react-dom": "18.2.7",
     "ai": "^2.1.28",
     "autoprefixer": "10.4.14",
+    "dotenv": "^16.3.1",
+    "emojisplosion": "^2.6.1",
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.12",
-    "langchain": "^0.0.143",
+    "highlight.js": "^11.8.0",
+    "langchain": "^0.0.146",
+    "marked": "^8.0.1",
     "next": "13.4.12",
     "postcss": "8.4.27",
     "react": "18.2.0",
@@ -33,6 +38,7 @@
     "zod-to-json-schema": "^3.21.4"
   },
   "devDependencies": {
-    "prettier": "3.0.0"
+    "prettier": "3.0.0",
+    "tsx": "^3.12.8"
   }
 }
