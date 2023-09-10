@@ -8,8 +8,8 @@ Try it out here: https://langchain-translator.vercel.app/
 
 ![Example chat output with feedback buttons](/public/images/output.png)
 
-Remember to leave feedback using the thumbs up and down buttons! It will help us further refine the dataset and allow for even better fine-tuned models
-in the future.
+Remember to leave feedback using the thumbs up and down buttons! It will help us further refine the
+[LangSmith dataset](https://smith.langchain.com/) and enable even better fine-tuned models in the future.
 
 ## 🎹 Why Fine-Tuning?
 
