@@ -55,6 +55,18 @@ I went to the newly created dataset in LangSmith and exported it in the `OpenAI 
 Then I used [@jxnlco's Instructor CLI](https://jxnl.github.io/instructor/cli/finetune/) to fine-tune a model from the downloaded
 file. The process took a few minutes, but at the end of it I had my own fine-tuned `gpt-3.5-turbo` model!
 
+## 📄 Results
+
+While the model isn't perfect and does still hallucinate sometimes, there are some pretty quality responses that have personally saved me time:
+
+https://smith.langchain.com/public/3a18b910-90e2-48b9-a69e-b01d10032181/r
+https://smith.langchain.com/public/900e7b36-5994-4a10-8ca7-fa3f74a62c8d/r
+
+All in all I think fine-tuning on OpenAI has potential - more comparison vs. standard `gpt-4` is needed,
+but it’s definitely better than stock `gpt-3.5-turbo`, and seems comparable in many cases.
+
+I'm very excited to be able to fine-tune `gpt-4` and to keep adding to the dataset!
+
 ## Thank You!
 
 Thanks for reading! If you have any questions or comments, reach out me [@Hacubu](https://x.com/hacubu)
