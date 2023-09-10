@@ -1,115 +1,63 @@
-# 🦜️🔗 LangChain + Next.js Starter Template
+# 🐍 LangChain Python to JS Module Translator ☕
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/langchain-ai/langchain-nextjs-template)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flangchain-ai%2Flangchain-nextjs-template)
+This repo contains a chat bot around an OpenAI model fine-tuned to convert LangChain Python code to LangChain.js.
+It's intended to help LangChain.js contributors more easily port over analogous Python features by automatically
+generating starter code and docstrings.
 
-This template scaffolds a LangChain.js + Next.js starter template. It showcases how to use and combine LangChain modules for several
-use cases. Specifically:
+Try it out here: https://langchain-translator.vercel.app/
 
-- [Simple chat](/app/api/chat/route.ts)
-- [Returning structured output from an LLM call](/app/api/chat/structured_output/route.ts)
-- [Answering complex, multi-step questions with agents](/app/api/chat/agents/route.ts)
-- [Retrieval augmented generation (RAG) with a chain and a vector store](/app/api/chat/retrieval/route.ts)
-- [Retrieval augmented generation (RAG) with an agent and a vector store](/app/api/chat/retrieval_agents/route.ts)
+Remember to leave feedback! It will help us further refine the dataset and allow for even better fine-tuned models
+in the future.
 
-Most of them use Vercel's [AI SDK](https://github.com/vercel-labs/ai) to stream tokens to the client and display the incoming messages.
+## 🎹 Why Fine-Tuning?
 
-![Demo GIF](/public/images/agent-convo.gif)
+GPT-4 is generally very good at rewriting and translating code. However, I periodically ran into a few issues:
 
-You can check out a hosted version of this repo here: https://langchain-nextjs-template.vercel.app/
+1. Hallucination/misuse of imports
+  - Some Python classes are named differently and have slightly different interfaces (named args vs. options objects)
+    - Could maybe have come up with a few-shotting/RAG pipeline like previous work on [automatically generating docstrings](https://github.com/jacoblee93/auto-docstrings) but seemed more difficult to encapsulate usage information as well as summaries
+  - Idea was that fine-tuning could innately capture some of the context around imports
+2. Encapsulating code style (camel case, linter issues, etc.)
+  - Example with gpt-4: https://smith.langchain.com/public/14c1e391-2cf5-4a3d-8c9f-15929a69c08d/r?tab=2
+      - Not bad but it uses snake case, doesn’t include a constructor, and doesn’t have a docstring for the class
+  - Fine-tuned 3.5 on the same input: https://smith.langchain.com/public/900e7b36-5994-4a10-8ca7-fa3f74a62c8d/r
 
-## 🚀 Getting Started
+Additionally, OpenAI has plans to make [fine-tuning GPT-4 available in the future](https://platform.openai.com/docs/guides/fine-tuning/what-models-can-be-fine-tuned). By starting to gather and evaluate a dataset now, we can reuse it for fine-tuning future models.
 
-First, clone this repo and download it locally.
+## 🧪 Methodology
 
-Next, you'll need to set up environment variables in your repo's `.env.local` file. Copy the `.env.example` file to `.env.local`.
-To start with the basic examples, you'll just need to add your OpenAI API key.
+### Gathering the Dataset
 
-Next, install the required packages using your preferred package manager (e.g. `yarn`).
+The most difficult part of the project was gathering the initial dataset.
+While we fortunately have tried to keep the LangChain Python and JS repos in sync,
+it was quite tedious to go through both repos and look for parallel examples.
 
-Now you're ready to run the development server:
+After going through about 6 myself, I ended up hiring someone on Upwork (thanks [@jxnlco](https://twitter.com/jxnlco) for the tip!)
+and after a few days, had a dataset of 72 parallel examples. You can see the initial dataset used here under `dataset/training`.
 
-```bash
-yarn dev
-```
+### Formatting the Dataset and Uploading to LangSmith
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result! Ask the bot something and you'll see a streamed response:
+I had decent results with just uploading raw Python and JS code examples to OpenAI, but had some issues with output formatting
+for the chat interface. I therefore decided to format the examples using the exact prompt I was going to use, which
+I've uploaded it to the LangChain Hub here: https://smith.langchain.com/hub/jacob/langchain-python-to-js
 
-![A streaming conversation between the user and the AI](/public/images/chat-conversation.png)
+I formatted the raw code examples with the above LangChain prompt, then ran the script under `scripts/upload_initial_dataset.ts`
+to create a dataset and upload the formatted examples to [LangSmith](https://smith.langchain.com) for safekeeping/potential
+future analysis.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Exporting and Uploading to OpenAI
 
-Backend logic lives in `app/api/chat/route.ts`. From here, you can change the prompt and model, or add other modules and logic.
+I went to the newly created dataset in LangSmith and exported it in the `OpenAI Fine-Tuning JSONL` format:
 
-## 🧱 Structured Output
+![Export the dataset](/public/images/export-dataset.png)
+![Download the dataset in the correct format](/public/images/download-dataset.png)
 
-The second example shows how to have a model return output according to a specific schema using OpenAI Functions.
-Click the `Structured Output` link in the navbar to try it out:
-
-![A streaming conversation between the user and an AI agent](/public/images/structured-output-conversation.png)
-
-The chain in this example uses a [popular library called Zod](https://zod.dev) to construct a schema, then formats it in the way OpenAI expects.
-It then passes that schema as a function into OpenAI and passes a `function_call` parameter to force OpenAI to return arguments in the specified format.
-
-For more details, [check out this documentation page](https://js.langchain.com/docs/modules/chains/popular/structured_output).
-
-## 🦜 Agents
-
-To try out the agent example, you'll need to give the agent access to the internet by populating the `SERPAPI_API_KEY` in `.env.local`.
-Head over to [the SERP API website](https://serpapi.com/) and get an API key if you don't already have one.
-
-You can then click the `Agent` example and try asking it more complex questions:
-
-![A streaming conversation between the user and an AI agent](/public/images/agent-conversation.png)
-
-This example uses the OpenAI Functions agent, but there are a few other options you can try as well.
-See [this documentation page for more details](https://js.langchain.com/docs/modules/agents/agent_types/).
-
-## 🐶 Retrieval
-
-The retrieval examples both use Supabase as a vector store. However, you can swap in
-[another supported vector store](https://js.langchain.com/docs/modules/data_connection/vectorstores/integrations/) if preferred by changing
-the code under `app/api/retrieval/ingest/route.ts`, `app/api/chat/retrieval/route.ts`, and `app/api/chat/retrieval_agents/route.ts`.
-
-For Supabase, follow [these instructions](https://js.langchain.com/docs/modules/data_connection/vectorstores/integrations/supabase) to set up your
-database, then get your database URL and private key and paste them into `.env.local`.
-
-You can then switch to the `Retrieval` and `Retrieval Agent` examples. The default document text is pulled from the LangChain.js retrieval
-use case docs, but you can change them to whatever text you'd like.
-
-For a given text, you'll only need to press `Upload` once. Pressing it again will re-ingest the docs, resulting in duplicates.
-You can clear your Supabase vector store by navigating to the console and running `DELETE FROM docuemnts;`.
-
-After splitting, embedding, and uploading some text, you're ready to ask questions!
-
-![A streaming conversation between the user and an AI retrieval chain](/public/images/retrieval-chain-conversation.png)
-
-![A streaming conversation between the user and an AI retrieval agent](/public/images/retrieval-agent-conversation.png)
-
-For more info on retrieval chains, [see this page](https://js.langchain.com/docs/use_cases/question_answering/).
-The specific variant of the conversational retrieval chain used here is composed using LangChain Expression Language, which you can
-[read more about here](https://js.langchain.com/docs/guides/expression_language/cookbook).
-
-For more info on retrieval agents, [see this page](https://js.langchain.com/docs/use_cases/question_answering/conversational_retrieval_agents).
-
-## 📚 Learn More
-
-The example chains in the `app/api/chat/route.ts` and `app/api/chat/retrieval/route.ts` files use
-[LangChain Expression Language](https://js.langchain.com/docs/guides/expression_language/interface) to
-compose different LangChain modules together. You can integrate other retrievers, agents, preconfigured chains, and more too, though keep in mind
-`BytesOutputParser` is meant to be used directly with model output.
-
-To learn more about what you can do with LangChain.js, check out the docs here:
-
-- https://js.langchain.com/docs/
-
-## ▲ Deploy on Vercel
-
-When ready, you can deploy your app on the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
-
-Check out the [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Then I used [@jxnlco's Instructor CLI](https://jxnl.github.io/instructor/cli/finetune/) to fine-tune a model from the downloaded
+file. The process took a few minutes, but at the end of it I had my own fine-tuned `gpt-3.5-turbo` model!
 
 ## Thank You!
 
-Thanks for reading! If you have any questions or comments, reach out to us on Twitter
-[@LangChainAI](https://twitter.com/langchainai), or [click here to join our Discord server](https://discord.gg/langchain).
+Thanks for reading! If you have any questions or comments, reach out me [@Hacubu](https://x.com/hacubu)
+or [@LangChainAI](https://x.com/langchainai) on X (formerly Twitter).
+
+Thank you also to [@jxnlco](https://twitter.com/jxnlco) for your tips and tricks!

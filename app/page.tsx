@@ -52,10 +52,9 @@ export default function Home() {
         <li className="text-l">
           🐙
           <span className="ml-2">
-            The source code, initial training dataset, and instructions for
-            creating your own LangSmith datasets for fine-tuning are available{" "}
+            The initial training dataset, motivation, and guides on creating your own LangSmith datasets are available{" "}
             <a href="https://github.com/jacoblee93/langchain-translator">
-              in the GitHub repo
+              on GitHub
             </a>
             .
           </span>
@@ -64,14 +63,12 @@ export default function Home() {
           👇
           <span className="ml-2">
             Go to{" "}
-            <code>
-              <a
-                href="https://github.com/langchain-ai/langchain/tree/master/libs/langchain/langchain"
-                target="_blank"
-              >
-                https://github.com/langchain-ai/langchain/tree/master/libs/langchain/langchain
-              </a>
-            </code>
+            <a
+              href="https://github.com/langchain-ai/langchain/tree/master/libs/langchain/langchain"
+              target="_blank"
+            >
+              the LangChain Python repo
+            </a>
             , pick your favorite module, and paste some Python code below!
           </span>
         </li>
@@ -83,7 +80,7 @@ export default function Home() {
       endpoint="api/chat"
       emoji="🦜"
       titleText="LangChain Python to JS Translator"
-      placeholder="Paste some Python code from https://github.com/langchain-ai/langchain/tree/master/libs/langchain/langchain..."
+      placeholder="Paste some Python code from a LangChain module..."
       emptyStateComponent={InfoCard}
     ></ChatWindow>
   );
