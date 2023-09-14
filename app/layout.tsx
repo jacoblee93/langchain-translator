@@ -25,7 +25,7 @@ export default function RootLayout({
           property="og:description"
           content="Translate LangChain Python modules to JS! See https://github.com/jacoblee93/langchain-translator for source code and more info."
         />
-        <meta property="og:image" content="/images/chat.png" />
+        <meta property="og:image" content="/images/og_image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:title"
@@ -35,7 +35,7 @@ export default function RootLayout({
           name="twitter:description"
           content="Translate LangChain Python modules to JS! See https://github.com/jacoblee93/langchain-translator for source code and more info."
         />
-        <meta name="twitter:image" content="/images/chat.png" />
+        <meta name="twitter:image" content="/images/og_image.png" />
       </head>
       <body className={publicSans.className}>
         <div className="flex flex-col p-4 md:p-12 h-[100vh]">{children}</div>
