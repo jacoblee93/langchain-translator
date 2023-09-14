@@ -11,23 +11,23 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>LangSmith Feedback Example</title>
+        <title>LangChain Python to JS Translator Bot</title>
         <link rel="shortcut icon" href="/images/favicon.ico" />
         <meta
           name="description"
-          content="Starter template showing how to use LangSmith in a Next.js project. See source code and deploy your own at https://github.com/langchain-ai/langsmith-cookbook!"
+          content="Translate LangChain Python modules to JS! See https://github.com/jacoblee93/langchain-translator for source code and more info."
         />
-        <meta property="og:title" content="LangSmith Feedback Example" />
+        <meta property="og:title" content="LangChain Python to JS Module Translator" />
         <meta
           property="og:description"
-          content="Starter template showing how to use LangSmith in Next.js projects. See source code and deploy your own at https://github.com/langchain-ai/langsmith-cookbook!"
+          content="Translate LangChain Python modules to JS! See https://github.com/jacoblee93/langchain-translator for source code and more info."
         />
         <meta property="og:image" content="/images/chat.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="LangSmith Feedback Example" />
+        <meta name="twitter:title" content="LangChain Python to JS Module Translator" />
         <meta
           name="twitter:description"
-          content="Starter template showing how to use LangSmith in Next.js projects. See source code and deploy your own at https://github.com/langchain-ai/langsmith-cookbook!"
+          content="Translate LangChain Python modules to JS! See https://github.com/jacoblee93/langchain-translator for source code and more info."
         />
         <meta name="twitter:image" content="/images/chat.png" />
       </head>
