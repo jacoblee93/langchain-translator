@@ -17,14 +17,20 @@ export default function RootLayout({
           name="description"
           content="Translate LangChain Python modules to JS! See https://github.com/jacoblee93/langchain-translator for source code and more info."
         />
-        <meta property="og:title" content="LangChain Python to JS Module Translator" />
+        <meta
+          property="og:title"
+          content="LangChain Python to JS Module Translator"
+        />
         <meta
           property="og:description"
           content="Translate LangChain Python modules to JS! See https://github.com/jacoblee93/langchain-translator for source code and more info."
         />
         <meta property="og:image" content="/images/chat.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="LangChain Python to JS Module Translator" />
+        <meta
+          name="twitter:title"
+          content="LangChain Python to JS Module Translator"
+        />
         <meta
           name="twitter:description"
           content="Translate LangChain Python modules to JS! See https://github.com/jacoblee93/langchain-translator for source code and more info."

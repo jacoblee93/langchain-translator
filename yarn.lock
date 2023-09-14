@@ -3236,7 +3236,8 @@ __metadata:
     eslint: 8.46.0
     eslint-config-next: 13.4.12
     highlight.js: ^11.8.0
-    langchain: ^0.0.148
+    langchain: ^0.0.149
+    langsmith: ^0.0.37
     marked: ^8.0.1
     next: 13.4.12
     postcss: 8.4.27
@@ -3252,9 +3253,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"langchain@npm:^0.0.148":
-  version: 0.0.148
-  resolution: "langchain@npm:0.0.148"
+"langchain@npm:^0.0.149":
+  version: 0.0.149
+  resolution: "langchain@npm:0.0.149"
   dependencies:
     "@anthropic-ai/sdk": ^0.6.2
     ansi-styles: ^5.0.0
@@ -3520,7 +3521,7 @@ __metadata:
       optional: true
     youtubei.js:
       optional: true
-  checksum: de1f21eeaf7c5fb1ef1906e55bc4aff4cd89812ef316c15e0ffae6138912e741874b8204c7d741bdda2d3f471f86a81bb47c8a4cde2dfb302c14eda2e2efde4b
+  checksum: 76d1ede46f2c653cc59d310cad79971757a3c73217ecca788828866e8898add949d1762f92e2f49e3708b3c5455b2dfba6f368597d2df4345f1e88aae4008d2b
   languageName: node
   linkType: hard
 
@@ -3528,6 +3529,21 @@ __metadata:
   version: 0.0.6
   resolution: "langchainhub@npm:0.0.6"
   checksum: f771e5375b7ae9cc6fc59d5e2b1fd35c29e5759f4595617e3a235142bc2ca12c4135aa1631d85ee4e25c89968696242dd6380f6b90e87ffbc9006efc3cdc53c4
+  languageName: node
+  linkType: hard
+
+"langsmith@npm:^0.0.37":
+  version: 0.0.37
+  resolution: "langsmith@npm:0.0.37"
+  dependencies:
+    "@types/uuid": ^9.0.1
+    commander: ^10.0.1
+    p-queue: ^6.6.2
+    p-retry: 4
+    uuid: ^9.0.0
+  bin:
+    langsmith: dist/cli/main.cjs
+  checksum: 4cb9b317b368e2c7f9f74d841fba9b25bb7a24fb99a9a4133cac5fccdfff112337f1906bf040699d8cd284ab4657d54cf79caaf10a8444ca05dadc18ea5d5464
   languageName: node
   linkType: hard
 

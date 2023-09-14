@@ -36,11 +36,9 @@ async function run() {
   });
 
   for (const [formattedInputMessages, outputMessage] of examples) {
-    await client.createExample(
-      { input: formattedInputMessages.map((message) => ({type: message._getType(), data: {content: message.content}})) },
-      { output: {type: outputMessage._getType(), data: {content: outputMessage.content}} },
-      // { input: formattedInputMessages },
-      // { output: outputMessage },
+    await client.createChatExample(
+      formattedInputMessages,
+      outputMessage,
       {
         datasetId: dataset.id,
       }

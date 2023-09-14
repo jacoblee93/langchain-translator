@@ -14,13 +14,15 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const runId = body.run_id;
     const score = body.score;
+    const feedbackType =
+      body.feedback_type === "did_copy" ? "did_copy" : "user_score";
     if (!runId || isNaN(score)) {
       return NextResponse.json(
         { error: "You must provide a run id and a score." },
         { status: 400 },
       );
     }
-    const feedback = await langsmithClient.createFeedback(runId, "user_score", {
+    const feedback = await langsmithClient.createFeedback(runId, feedbackType, {
       score,
     });
     return NextResponse.json({ feedback }, { status: 200 });

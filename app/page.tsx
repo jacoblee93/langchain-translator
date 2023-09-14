@@ -52,7 +52,8 @@ export default function Home() {
         <li className="text-l">
           🐙
           <span className="ml-2">
-            The initial training dataset, motivation, and guides on creating your own LangSmith datasets are available{" "}
+            The initial training dataset, motivation, and guides on creating
+            your own LangSmith datasets are available{" "}
             <a href="https://github.com/jacoblee93/langchain-translator">
               on GitHub
             </a>

@@ -24,6 +24,7 @@ export function ChatMessageBubble(props: { message: ChatWindowMessage, aiEmoji?:
 
   const [isLoading, setIsLoading] = useState(false);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [copyFeedback, setCopyFeedback] = useState<Feedback | null>(null);
   const [comment, setComment] = useState("");
   const [showCommentForm, setShowCommentForm] = useState(false);
 
@@ -59,6 +60,44 @@ export function ChatMessageBubble(props: { message: ChatWindowMessage, aiEmoji?:
       },
       emojis: score === 1 ? ["👍"] : ["👎"],
     });
+  }
+
+  async function copyCode(e: React.MouseEvent<HTMLButtonElement>) {
+    // Copy the text inside the text field
+    let rawCode = content;
+    if (rawCode.startsWith("```typescript\n")) {
+      rawCode = rawCode.slice("```typescript\n".length);
+    }
+    if (rawCode.endsWith("```")) {
+      rawCode = rawCode.slice(0, -"```".length);
+    }
+    navigator.clipboard.writeText(rawCode);
+    toast("Code copied!", {
+      theme: "dark",
+      autoClose: 2000,
+    });
+    if (!copyFeedback) {
+      const response = await fetch("api/feedback", {
+        method: "POST",
+        body: JSON.stringify({
+          run_id: runId,
+          feedback_type: "did_copy",
+          score: 1,
+        })
+      });
+
+      const json = await response.json();
+
+      if (json.error) {
+        toast(json.error, {
+          theme: "dark"
+        });
+        return;
+      }
+      if (json.feedback) {
+        setCopyFeedback(json.feedback);
+      }
+    }
   }
 
   async function handleCommentSubmission(e: FormEvent<HTMLFormElement>) {
@@ -141,8 +180,9 @@ export function ChatMessageBubble(props: { message: ChatWindowMessage, aiEmoji?:
           <a href={traceUrl} target="_blank">🔎 View LangSmith Trace</a>
         </code>
       </div>
-      <div className={`${!runId ? "hidden" : ""} ml-auto mt-2`}>
-        <button className={`p-2 border text-3xl rounded hover:bg-green-400 ${feedback && feedback.score === 1 ? "bg-green-400" : ""}`} onMouseUp={(e) => handleScoreButtonPress(e, 1)}>
+      <div className={`${!runId ? "hidden" : ""} ml-auto mt-2 flex`}>
+        <button className={`p-2 border text-l rounded hover:bg-sky-400`} onMouseUp={copyCode}>Copy code</button>
+        <button className={`p-2 border text-3xl rounded hover:bg-green-400 ml-4 ${feedback && feedback.score === 1 ? "bg-green-400" : ""}`} onMouseUp={(e) => handleScoreButtonPress(e, 1)}>
           👍
         </button>
         <button className={`p-2 border text-3xl rounded ml-4 hover:bg-red-400 ${feedback && feedback.score === 0 ? "bg-red-400" : ""}`} onMouseUp={(e) => handleScoreButtonPress(e, 0)}>
