@@ -8,8 +8,8 @@ Try it out here: https://langchain-translator.vercel.app/
 
 ![Example chat output with feedback buttons](/public/images/output.png)
 
-Remember to leave feedback using the thumbs up and down buttons! It's logged to a [LangSmith](https://smith.langchain.com/)
-project and will be used to fine-tune even better models in the future.
+Remember to leave feedback using the thumbs up and down buttons! Runs are logged to a [LangSmith](https://smith.langchain.com/)
+project and runs with good feedback will be used to fine-tune even better models in the future.
 
 ## 🎹 Why Fine-Tuning?
 
@@ -61,12 +61,13 @@ file. The process took a few minutes, but at the end of it I had my own fine-tun
 
 In an attempt to improve the quality of the dataset over time, I added a thumbs up and thumbs down button to generated messages.
 When a user clicks one of those buttons, it sends feedback on the run that generated the message to LangSmith.
-My plan is to filter runs with positive feedback and add them to the dataset to give the next fine-tuned LLM more examples.
 
 ![Filtering runs by feedback score](/public/images/feedback.png)
 
 The app also tracks when a user copies a generated message and logs that as feedback too. This is an example of using
 a more subtle and natural method than direct buttons, though it's a weaker signal since users may copy bad messages too.
+
+My plan is to filter runs with positive feedback, add them to the dataset, and repeat the above process to improve the fine-tuning process.
 
 ## 📄 Results
 
